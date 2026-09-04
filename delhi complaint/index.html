@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delhi NCR Complaint Portal | दिल्ली एनसीआर शिकायत पोर्टल</title>
+    <meta name="description" content="AI-Powered Public Grievance Portal for Delhi NCR. File formal complaints to MCD, Delhi Police, DJB, PWD, NDMC, DDA and get formal letters in English & Hindi.">
+    
+    <!-- Google Fonts: Inter & Noto Sans Devanagari -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- html2pdf.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="lang-en">
+    <!-- Top Decorative Tricolor Stripe -->
+    <div class="tricolor-bar"></div>
+
+    <!-- Application Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-badge">
+                <div class="emblem-icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div class="brand-text">
+                    <h1 id="portal-title" data-i18n="portalTitle">Delhi NCR Complaint Portal</h1>
+                    <p id="portal-subtitle" data-i18n="portalSubtitle">AI-Powered Citizen Grievance Redressal Assistant</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <!-- History Drawer Button -->
+                <button id="btn-history" class="btn-secondary-outline" title="View Past Complaints">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span data-i18n="historyBtn">My Complaints</span>
+                    <span id="history-count" class="badge-count">0</span>
+                </button>
+
+                <!-- Language Toggle Button -->
+                <div class="lang-switch-wrapper">
+                    <button id="btn-lang-toggle" class="lang-toggle-btn">
+                        <span class="lang-flag">🇮🇳</span>
+                        <span id="lang-toggle-text">हिंदी में बदलें</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-container">
+        <!-- Hero Banner / Notice -->
+        <section class="hero-banner">
+            <div class="hero-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span data-i18n="govInitiative">Delhi NCR Civic Assistance Tool</span>
+            </div>
+            <h2 data-i18n="heroHeading">File Formal Civic Complaints in 4 Simple Steps</h2>
+            <p data-i18n="heroSubheading">Generate legal-quality formal grievance letters tailored for MCD, DJB, Delhi Police, PWD, and NDMC in English or Hindi using Gemini AI.</p>
+        </section>
+
+        <!-- Wizard Progress Tracker -->
+        <div class="wizard-progress-card">
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="wizard-progress-fill"></div>
+            </div>
+            <div class="wizard-steps">
+                <div class="step-node active" id="node-step-1">
+                    <div class="step-circle"><i class="fa-solid fa-sitemap"></i></div>
+                    <div class="step-label" data-i18n="step1Title">1. Select Dept</div>
+                </div>
+                <div class="step-node" id="node-step-2">
+                    <div class="step-circle"><i class="fa-solid fa-user-pen"></i></div>
+                    <div class="step-label" data-i18n="step2Title">2. Details</div>
+                </div>
+                <div class="step-node" id="node-step-3">
+                    <div class="step-circle"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <div class="step-label" data-i18n="step3Title">3. AI Draft</div>
+                </div>
+                <div class="step-node" id="node-step-4">
+                    <div class="step-circle"><i class="fa-solid fa-paper-plane"></i></div>
+                    <div class="step-label" data-i18n="step4Title">4. Export & Action</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wizard Steps Container -->
+        <div class="wizard-card">
+
+            <!-- STEP 1: Department Selection Grid -->
+            <section class="wizard-step step-pane active" id="step-1">
+                <div class="step-header">
+                    <div>
+                        <h3 data-i18n="selectDeptHeading">Step 1: Choose Concerned Department</h3>
+                        <p data-i18n="selectDeptSubheading">Select the civic agency responsible for your grievance.</p>
+                    </div>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="dept-search-input" placeholder="Search department or issue..." data-i18n-placeholder="searchDeptPlaceholder">
+                    </div>
+                </div>
+
+                <div class="dept-grid" id="dept-grid-container">
+                    <!-- Dynamic Department Cards Rendered Here -->
+                </div>
+
+                <div class="step-actions right-align">
+                    <button class="btn-primary" id="btn-goto-step-2" disabled>
+                        <span data-i18n="nextStep">Continue to Details</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- STEP 2: User & Complaint Details -->
+            <section class="wizard-step step-pane" id="step-2">
+                <div class="step-header">
+                    <div>
+                        <h3 data-i18n="formHeading">Step 2: Enter Complaint & Citizen Details</h3>
+                        <p data-i18n="formSubheading">Provide accurate info so the official complaint can be dispatched effectively.</p>
+                    </div>
+                    <div class="selected-dept-pill" id="selected-dept-badge">
+                        <i class="fa-solid fa-building"></i>
+                        <span id="selected-dept-name-text">No Department Selected</span>
+                    </div>
+                </div>
+
+                <form id="complaint-form" onsubmit="return false;">
+                    <div class="form-grid">
+                        <!-- Complainant Name -->
+                        <div class="form-group">
+                            <label for="user-name">
+                                <i class="fa-solid fa-user"></i>
+                                <span data-i18n="labelName">Full Name</span> <span class="required">*</span>
+                            </label>
+                            <input type="text" id="user-name" required placeholder="e.g., Rajesh Sharma" data-i18n-placeholder="placeholderName">
+                        </div>
+
+                        <!-- Phone / Contact -->
+                        <div class="form-group">
+                            <label for="user-phone">
+                                <i class="fa-solid fa-phone"></i>
+                                <span data-i18n="labelPhone">Mobile / Email</span>
+                            </label>
+                            <input type="text" id="user-phone" placeholder="e.g., +91 9876543210" data-i18n-placeholder="placeholderPhone">
+                        </div>
+
+                        <!-- Address / Locality -->
+                        <div class="form-group full-width">
+                            <label for="user-address">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span data-i18n="labelAddress">Locality / Address & Ward Number</span> <span class="required">*</span>
+                            </label>
+                            <input type="text" id="user-address" required placeholder="e.g., Pocket B, Mayur Vihar Phase 1, Near Metro Station, Delhi 110091" data-i18n-placeholder="placeholderAddress">
+                        </div>
+
+                        <!-- Quick Issue Shortcut Tags -->
+                        <div class="form-group full-width">
+                            <label>
+                                <i class="fa-solid fa-tags"></i>
+                                <span data-i18n="quickIssueTags">Common Grievance Topics (Click to add):</span>
+                            </label>
+                            <div class="tags-container" id="quick-tags-box">
+                                <!-- Quick tags inserted dynamically based on department -->
+                            </div>
+                        </div>
+
+                        <!-- Urgency Level -->
+                        <div class="form-group">
+                            <label for="urgency-level">
+                                <i class="fa-solid fa-gauge-high"></i>
+                                <span data-i18n="labelUrgency">Urgency Level</span>
+                            </label>
+                            <select id="urgency-level">
+                                <option value="Normal" data-i18n="urgencyNormal">Normal Grievance (Standard Resolution)</option>
+                                <option value="Urgent" data-i18n="urgencyUrgent">Urgent Grievance (High Priority)</option>
+                                <option value="Emergency" data-i18n="urgencyEmergency">Emergency / Safety Risk (Immediate Action)</option>
+                            </select>
+                        </div>
+
+                        <!-- Sub Category -->
+                        <div class="form-group">
+                            <label for="issue-category">
+                                <i class="fa-solid fa-list-check"></i>
+                                <span data-i18n="labelCategory">Issue Sub-Category</span>
+                            </label>
+                            <select id="issue-category">
+                                <option value="General" data-i18n="catGeneral">General Civic Issue</option>
+                            </select>
+                        </div>
+
+                        <!-- Problem Description Textarea -->
+                        <div class="form-group full-width">
+                            <label for="user-problem">
+                                <i class="fa-solid fa-file-pen"></i>
+                                <span data-i18n="labelProblem">Describe your Problem in Detail</span> <span class="required">*</span>
+                            </label>
+                            <textarea id="user-problem" rows="5" required placeholder="Describe the issue clearly: What is the problem? Since how long has it been happening? Exact location or landmark? Impact on residents?" data-i18n-placeholder="placeholderProblem"></textarea>
+                            <div class="textarea-footer">
+                                <span class="char-count" id="char-counter">0 / 1000 characters</span>
+                                <span class="tip-text" data-i18n="tipDetail">Tip: Providing exact dates and street names helps AI generate a stronger letter.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" id="btn-back-to-1">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span data-i18n="backStep">Back</span>
+                        </button>
+                        <button type="button" class="btn-primary" id="btn-generate-ai">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span data-i18n="btnGenerateLetter">Generate Formal Letter with AI</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- STEP 3: AI Generation Loading & Editable Preview -->
+            <section class="wizard-step step-pane" id="step-3">
+                
+                <!-- Loading State Screen -->
+                <div class="loading-state-card" id="ai-loading-screen">
+                    <div class="spinner-container">
+                        <div class="pulse-ring"></div>
+                        <div class="ai-icon-center"><i class="fa-solid fa-brain"></i></div>
+                    </div>
+                    <h3 id="loading-title" data-i18n="loadingTitle">Drafting Official Grievance Representation...</h3>
+                    <p id="loading-subtitle" data-i18n="loadingSubtitle">Consulting Google Gemini AI & formatting according to Delhi Civic Administration standards.</p>
+                    
+                    <div class="loading-steps-list">
+                        <div class="loading-step-item done">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span data-i18n="loadStep1">Analyzing problem context & department protocols</span>
+                        </div>
+                        <div class="loading-step-item active" id="load-step-2">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            <span data-i18n="loadStep2">Generating formal legal salutations & reference code</span>
+                        </div>
+                        <div class="loading-step-item" id="load-step-3">
+                            <i class="fa-solid fa-circle"></i>
+                            <span data-i18n="loadStep3">Formatting bilingual document for dispatch</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview & Editor Screen (Hidden until AI completes) -->
+                <div class="preview-state-card hidden" id="ai-result-screen">
+                    <div class="step-header">
+                        <div>
+                            <h3 data-i18n="letterReadyHeading">Step 3: Review & Edit Generated Formal Letter</h3>
+                            <p data-i18n="letterReadySubheading">AI has compiled your grievance into an official letter. You can click anywhere to edit before exporting.</p>
+                        </div>
+                        <div class="letter-actions-top">
+                            <button type="button" class="btn-sm btn-outline" id="btn-toggle-edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span id="edit-toggle-label" data-i18n="editToggle">Enable Direct Editing</span>
+                            </button>
+                            <button type="button" class="btn-sm btn-outline" id="btn-regenerate">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span data-i18n="btnRegenerate">Regenerate AI Letter</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Letter Paper Preview Container -->
+                    <div class="paper-wrapper">
+                        <div class="letter-paper" id="printable-letter-paper">
+                            <!-- Official Header Logo & Ref -->
+                            <div class="letter-header">
+                                <div class="letter-emblem">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                                <div class="letter-heading-text">
+                                    <h4>PUBLIC GRIEVANCE REPRESENTATION NOTICE</h4>
+                                    <p>Government of National Capital Territory of Delhi (GNCTD) Grievance Format</p>
+                                </div>
+                            </div>
+
+                            <div class="letter-meta-row">
+                                <div><strong>Ref Code:</strong> <span id="letter-ref-code">DEL-2026-MCD-00000</span></div>
+                                <div><strong>Date:</strong> <span id="letter-date">September 04, 2026</span></div>
+                            </div>
+
+                            <hr class="letter-divider">
+
+                            <!-- Letter Text Body (Editable) -->
+                            <div class="letter-body-content" id="letter-text-container" contenteditable="false">
+                                <!-- Letter Content Injected Here -->
+                            </div>
+
+                            <!-- Footer Complainant Signature Area -->
+                            <div class="letter-footer-stamps">
+                                <div class="signature-box">
+                                    <p>Yours Sincerely,</p>
+                                    <div class="sig-line" id="letter-signature-name">Rajesh Sharma</div>
+                                    <small>(Citizen & Resident of Delhi NCR)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" id="btn-back-to-2">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span data-i18n="backStep">Back</span>
+                        </button>
+                        <button type="button" class="btn-primary btn-success" id="btn-goto-step-4">
+                            <span data-i18n="proceedExport">Proceed to Export & Share Options</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- STEP 4: Export, Share & Actions -->
+            <section class="wizard-step step-pane" id="step-4">
+                <div class="step-header">
+                    <div>
+                        <h3 data-i18n="exportHeading">Step 4: Dispatch & Export Grievance</h3>
+                        <p data-i18n="exportSubheading">Choose your preferred channel to send or download the letter.</p>
+                    </div>
+                    <div class="status-chip success">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span data-i18n="statusReady">Grievance Letter Ready</span>
+                    </div>
+                </div>
+
+                <!-- Department Email / Contact Card -->
+                <div class="dept-contact-summary">
+                    <div class="summary-icon">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </div>
+                    <div class="summary-details">
+                        <small data-i18n="targetDeptLabel">Target Agency Contact Information:</small>
+                        <h4 id="export-dept-title">Municipal Corporation of Delhi (MCD)</h4>
+                        <p><i class="fa-solid fa-at"></i> Official Email: <strong id="export-dept-email">grievances@mcd.delhi.gov.in</strong></p>
+                        <p><i class="fa-solid fa-phone"></i> Helpline: <span id="export-dept-phone">155304 / 311 App</span></p>
+                    </div>
+                </div>
+
+                <!-- Sharing Page Disclaimer Notice -->
+                <div class="disclaimer-card">
+                    <div class="disclaimer-header">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span data-i18n="disclaimerHeading">Important Disclaimer</span>
+                    </div>
+                    <p data-i18n="disclaimerText">
+                        Disclaimer: This platform is an independent, free tool and is not affiliated with, endorsed by, or representing the Government of Delhi or any government department. It was created solely to help citizens draft professionally formatted grievance letters, as many legitimate complaints are often rejected or ignored due to incorrect formatting. Using this tool does not guarantee official action, but it ensures your concerns are presented effectively.
+                    </p>
+                </div>
+
+                <!-- Export Cards Grid -->
+                <div class="export-grid">
+
+                    <!-- Export 1: WhatsApp -->
+                    <div class="export-card whatsapp">
+                        <div class="export-card-icon">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <div class="export-card-body">
+                            <h4 data-i18n="exportWhatsappTitle">Share via WhatsApp</h4>
+                            <p data-i18n="exportWhatsappDesc">Send encoded grievance directly to municipal officers or community groups.</p>
+                            <a id="btn-share-whatsapp" href="#" target="_blank" class="btn-export btn-whatsapp">
+                                <i class="fa-brands fa-whatsapp"></i>
+                                <span data-i18n="btnOpenWhatsapp">Open WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Export 2: Gmail Compose -->
+                    <div class="export-card email">
+                        <div class="export-card-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="export-card-body">
+                            <h4 data-i18n="exportEmailTitle">Send via Gmail</h4>
+                            <p data-i18n="exportEmailDesc">Opens Gmail in web browser with official address, subject & letter pre-filled.</p>
+                            <a id="btn-send-email" href="#" target="_blank" class="btn-export btn-email">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span data-i18n="btnOpenEmail">Open Gmail Compose</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Export 3: Copy Text -->
+                    <div class="export-card copy">
+                        <div class="export-card-icon">
+                            <i class="fa-regular fa-copy"></i>
+                        </div>
+                        <div class="export-card-body">
+                            <h4 data-i18n="exportCopyTitle">Copy Text to Clipboard</h4>
+                            <p data-i18n="exportCopyDesc">Copy formatted letter text for pasting into PGMS, CPGRAMS, or 311 Mobile App.</p>
+                            <button id="btn-copy-text" type="button" class="btn-export btn-copy">
+                                <i class="fa-regular fa-copy"></i>
+                                <span data-i18n="btnCopyLetter">Copy Letter Text</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Export 4: Download PDF -->
+                    <div class="export-card pdf">
+                        <div class="export-card-icon">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <div class="export-card-body">
+                            <h4 data-i18n="exportPdfTitle">Download PDF Document</h4>
+                            <p data-i18n="exportPdfDesc">Generates a high-quality stylized PDF file formatted like an official government notice.</p>
+                            <button id="btn-download-pdf" type="button" class="btn-export btn-pdf">
+                                <i class="fa-solid fa-download"></i>
+                                <span data-i18n="btnDownloadPdf">Download Printable PDF</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="step-actions between">
+                    <button type="button" class="btn-secondary" id="btn-back-to-3">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span data-i18n="backStep">Back to Letter</span>
+                    </button>
+                    <button type="button" class="btn-primary btn-accent" id="btn-start-new">
+                        <i class="fa-solid fa-plus"></i>
+                        <span data-i18n="btnNewComplaint">File Another Complaint</span>
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Site Footer with Global Disclaimer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-disclaimer">
+                <div class="footer-disclaimer-title">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span data-i18n="disclaimerHeading">Important Disclaimer</span>
+                </div>
+                <p data-i18n="disclaimerText">
+                    Disclaimer: This platform is an independent, free tool and is not affiliated with, endorsed by, or representing the Government of Delhi or any government department. It was created solely to help citizens draft professionally formatted grievance letters, as many legitimate complaints are often rejected or ignored due to incorrect formatting. Using this tool does not guarantee official action, but it ensures your concerns are presented effectively.
+                </p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Delhi NCR Citizen Grievance Assistance Portal. Independent Citizen Utility Tool.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Complaint History Drawer (Off-canvas) -->
+    <div class="drawer-overlay" id="history-drawer-overlay"></div>
+    <aside class="drawer" id="history-drawer">
+        <div class="drawer-header">
+            <h3><i class="fa-solid fa-box-archive"></i> <span data-i18n="historyTitle">Saved Complaints History</span></h3>
+            <button class="drawer-close" id="btn-close-drawer"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body" id="history-list-container">
+            <!-- Rendered history cards -->
+        </div>
+        <div class="drawer-footer">
+            <button class="btn-sm btn-outline danger" id="btn-clear-history">
+                <i class="fa-solid fa-trash-can"></i> <span data-i18n="btnClearHistory">Clear All Saved History</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Application JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
