@@ -83,7 +83,7 @@ Citizens in Delhi NCR frequently face civic issues (water shortages, road damage
 - A free Gemini API Key from [Google AI Studio](https://aistudio.google.com)
 
 ## live preview
-- delhi-complaint-portal-fduhfggb8-sanchit0307s-projects.vercel.app
+- https://delhi-complaint-portal.vercel.app/
 
 ⚠️ Disclaimer
 This platform is an independent, open-source tool and is not affiliated with, endorsed by, or representing the Government of NCT of Delhi, Municipal Corporation of Delhi (MCD), or any official government agency. It is designed solely as a formatting assistant to help citizens structure grievance representations effectively.
